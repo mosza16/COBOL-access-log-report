@@ -1,0 +1,16 @@
+//DLDFV14  JOB SC,'KT1B105',CLASS=A,MSGCLASS=X,                         JOB02764
+//         NOTIFY=&SYSUID                                               00020001
+//*        MSGLEVEL=(1,1)
+//STEP01    EXEC PGM=IDCAMS,REGION=512K                                 02990001
+//SYSPRINT  DD SYSOUT=*                                                 03000001
+//SYSIN     DD *                                                        03010001
+ DELETE AJD14.ACCLOG.VSAM CLUSTER PURGE                                 03290001
+ DEFINE CLUSTER ( -                                                     03300001
+         NAME(AJD14.ACCLOG.VSAM) -                                      03310001
+         RECSZ(100,100) -                                               03320001
+         REC(50 10) -                                                   03330001
+         SHR(2) -                                                       03340001
+         SPANNED -                                                      03350001
+         NONINDEXED ) -                                                 03360001
+         DATA ( NAME (AJD14.ACCLOG.VSAM.DATA) )                         03370001
+

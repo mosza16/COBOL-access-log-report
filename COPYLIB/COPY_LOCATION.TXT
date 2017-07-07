@@ -1,0 +1,11 @@
+       FD  LOCATION                                                     00062005
+           RECORD CONTAINS  100 CHARACTERS                              00062104
+           LABEL  RECORDS   ARE STANDARD                                00063000
+           DATA   RECORD    ARE LOCATION-REC.                           00064005
+       01  LOCATION-REC.                                                00065005
+           05  LOCATION-KEY.                                            00066005
+1-8            10  LOCAT-ID                PIC X(08).                   00067006
+10-15      05  LOCAT-BUILDING              PIC X(15).                   00080006
+26-15      05  LOCAT-FLOOR                 PIC X(15).                   00100006
+42-15      05  LOCAT-ROOM                  PIC X(15).                   00110006
+

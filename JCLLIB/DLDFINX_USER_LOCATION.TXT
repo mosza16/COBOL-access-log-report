@@ -1,0 +1,30 @@
+//DLDFINX  JOB SC,'TRAIN',CLASS=A,MSGCLASS=X,                           JOB02764
+//         NOTIFY=&SYSUID                                               00020001
+//*        MSGLEVEL=(1,1)
+//DLDFINX   EXEC PGM=IDCAMS,REGION=512K                                 02990001
+//SYSPRINT  DD SYSOUT=*                                                 03000001
+//SYSIN     DD *                                                        03010001
+  DELETE  AJD14.USER CLUSTER PURGE
+  DEFINE  CLUSTER (NAME(AJD14.USER))  -
+          INDEX(NAME(AJD14.USER.INDEX) -
+               REC(300 100)                  -
+               SHR(3 3))                      -
+          DATA(NAME(AJD14.USER.DATA) -
+               KEYS(11  0)                    -
+               REC(300 100)                  -
+               RECSZ(100 100)                   -
+               SHR(3 3)                       -
+               CISZ(4096))
+  DELETE  AJD14.LOCATION CLUSTER PURGE                                  03470001
+     DEFINE  CLUSTER (NAME(AJD14.LOCATION))  -
+             INDEX(NAME(AJD14.LOCATION.INDEX) -
+                  REC(300 100)                  -
+                  SHR(3 3))                      -
+             DATA(NAME(AJD14.LOCATION.DATA) -
+                  KEYS(8 0)                    -
+                  REC(300 100)                  -
+                  RECSZ(100 100)                   -
+                  SHR(3 3)                       -
+                  CISZ(4096))
+
+

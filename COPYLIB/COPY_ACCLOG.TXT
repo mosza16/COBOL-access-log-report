@@ -1,0 +1,15 @@
+       FD  ACCLOG                                                       02070004
+           RECORD  CONTAINS  100  CHARACTERS                            02080000
+           LABEL   RECORDS   ARE  STANDARD                              02090000
+           DATA    RECORD    IS   ACCLOG-REC.                           02100004
+       01  ACCLOG-REC.                                                  02120004
+           05  ACC-LOG-ID                   PIC X(10).                  02130004
+           05  FILLER                       PIC X(01).                  02140000
+           05  ACC-ENTER-DATE               PIC X(10).                  02150004
+           05  FILLER                       PIC X(01).                  02160000
+           05  ACC-ENTER-TIME               PIC X(08).                  02170005
+           05  FILLER                       PIC X(01).                  02180000
+           05  ACC-LOCATION-ID              PIC X(08).                  02190005
+           05  FILLER                       PIC X(01).                  02200004
+           05  ACC-USER-ID                  PIC X(11).                  02210004
+

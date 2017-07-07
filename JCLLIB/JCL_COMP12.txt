@@ -1,0 +1,15 @@
+//COMP12   JOB 1,'COMPILE',CLASS=A,MSGCLASS=X,                          00010031
+//*        TYPRUN=SCAN,                                                 00020001
+//         NOTIFY=&SYSUID                                               00030000
+//PROCLIB JCLLIB ORDER=AJNCB00.TRAIN.PROCLIB                            00040014
+//***************************************************/                  00050000
+//COBRUN  EXEC COBOLCL,PARM.COBOL='LIB,RENT',REGION=200M,               00060024
+//             PARM.LKED='NOLIST,NOXREF,NOLET,NOMAP'                    00070000
+//**           PARM.LKED='LIST,XREF,LET,MAP'                            00080000
+//COBOL.SYSIN  DD DSN=AJD12.TRAIN.SRCLIB(ACCLOG),DISP=SHR               00090039
+//*COBOL.SYSLIB DD DSN=&SYSUID..TRAIN.COPYLIB,DISP=SHR                  00091018
+//COBOL.SYSLIB DD DSN=AJD14.TRAIN.COPYLIB,DISP=SHR                      00092039
+//*LKED.SYSLMOD DD DSN=AJD00.TRAIN.LOADLIB(TEST00),DISP=SHR             00100027
+//LKED.SYSLMOD DD DSN=&SYSUID..TRAIN.LOADLIB(ACCLOG),DISP=SHR           00100139
+//                                                                      00101000
+

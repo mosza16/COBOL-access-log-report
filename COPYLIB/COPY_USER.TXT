@@ -1,0 +1,12 @@
+       FD  USER                                                         00062004
+           RECORD CONTAINS  100 CHARACTERS                              00062104
+           LABEL  RECORDS   ARE STANDARD                                00063000
+           DATA   RECORD    ARE USER-REC.                               00064004
+       01  USER-REC.                                                    00065004
+           05  USER-KEY.                                                00066004
+1-11           10  USER-ID                 PIC X(11).                   00067004
+13-15      05  USER-NAME                   PIC X(15).                   00080004
+29-15      05  USER-SURNAME                PIC X(15).                   00100006
+45-25      05  USER-FACULTY                PIC X(25).                   00110006
+71-25      05  USER-DEPARTMENT             PIC X(25).                   00120006
+

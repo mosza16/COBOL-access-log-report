@@ -1,0 +1,17 @@
+//ACCLOG12 JOB SC,'ACCLOG',CLASS=B,MSGCLASS=X,                          JOB02764
+//         NOTIFY=&SYSUID                                               00020001
+//*        MSGLEVEL=(1,1)
+//ACCLOG   EXEC PGM=ACCLOG,REGION=512K                                  03810001
+//STEPLIB  DD DSN=AJD12.TRAIN.LOADLIB,DISP=SHR                          00730001
+//ACCLOG    DD DSN=AJD14.ACCLOG.VSAM,DISP=SHR                           03850001
+//USER      DD DSN=AJD14.USER,DISP=SHR                                  03850001
+//LOCATION  DD DSN=AJD14.LOCATION,DISP=SHR                              03850001
+//*SB1D100   DD DSN=AJBCB02.SB1D100.VSAM,DISP=SHR                       03850001
+//*STUDOUT   DD DSN=AJD12.OUTPUT.VSAM,DISP=SHR                          03850001
+//*STUREPORT DD SYSOUT=*                                                03920001
+//KMU1P01  DD SYSOUT=*                                                  03920001
+//KMU1P02  DD SYSOUT=*                                                  03920001
+//KMU1P03  DD SYSOUT=*                                                  03920001
+//SYSOUT   DD SYSOUT=*                                                  03920001
+/*                                                                      03930001
+

@@ -1,0 +1,486 @@
+      *----------------------------------------------------------------*00005000
+      *----------  MVS  COBOL  ----------------------------------------*00005700
+      *----------------------------------------------------------------*00005851
+       IDENTIFICATION        DIVISION.                                  00006668
+       PROGRAM-ID.           ACCLOG01.                                  00006799
+       AUTHOR.               KITTIPONG AND KITTISAK.                    00007099
+       INSTALLATION.         KMUTT.                                     00008051
+       DATE-WRITTEN.         28/03/16.                                  00009099
+       DATE-COMPILED.                                                   00010051
+      *----------------------------------------------------------------*00040000
+      * PROGRAM PURPOSE : READ AJNCB00.STUDENT.VSAM -------------------*00041099
+      * JCL : KMU1J000                                                  00041174
+      * LINE COMMENTS :                                                 00041274
+      *----------------------------------------------------------------*00042011
+       ENVIRONMENT           DIVISION.                                  00050000
+      *----------------------------------------------------------------*00060000
+       CONFIGURATION         SECTION.                                   00070000
+       SOURCE-COMPUTER.      IBM-3081.                                  00080051
+       OBJECT-COMPUTER.      IBM-3081.                                  00090051
+       SPECIAL-NAMES.        C01   IS   NEXT-PAGE.                      00100000
+      *----------------------------------------------------------------*00110000
+       INPUT-OUTPUT          SECTION.                                   00120000
+      *----------------------------------------------------------------*00130000
+       FILE-CONTROL.                                                    00140000
+           SELECT  ACCLOG    ASSIGN        TO  AS-ACCLOG                00150099
+                             ORGANIZATION  IS  SEQUENTIAL               00160000
+                             ACCESS MODE   IS  SEQUENTIAL               00170000
+                             FILE STATUS   IS  ACCLOG-STATUS.           00180099
+           SELECT  KMU1P01   ASSIGN        TO  KMU1P01.                 00180199
+           SELECT  KMU1P02   ASSIGN        TO  KMU1P02.                 00180299
+           SELECT  KMU1P03   ASSIGN        TO  KMU1P03.                 00180399
+                                                                        00181099
+           SELECT  USER      ASSIGN        TO  USER                     00200099
+                             ORGANIZATION  IS  INDEXED                  00210099
+                             ACCESS MODE   IS  RANDOM                   00220099
+                             RECORD KEY    IS  USER-KEY                 00221099
+                             FILE STATUS   IS  USER-STATUS.             00222099
+                                                                        00222199
+           SELECT LOCATION   ASSIGN        TO  LOCATION                 00223099
+                             ORGANIZATION  IS  INDEXED                  00224099
+                             ACCESS MODE   IS  RANDOM                   00225099
+                             RECORD KEY    IS  LOCATION-KEY             00226099
+                             FILE STATUS   IS  LOCATION-STATUS.         00227099
+                                                                        00227199
+      *----------------------------------------------------------------*00230000
+       DATA                  DIVISION.                                  00240000
+      *----------------------------------------------------------------*00250000
+       FILE                  SECTION.                                   00260000
+      *----------------------------------------------------------------*00261000
+       COPY ACCLOG.                                                     00262099
+       COPY USER.                                                       00263099
+       COPY LOCATION.                                                   00264099
+0001  *FD  STUDENT                                                      00280099
+0001  *    RECORD  CONTAINS  100  CHARACTERS                            00290099
+0001  *    LABEL   RECORDS   ARE  STANDARD                              00300099
+0001  *    DATA    RECORD    IS   STUDENT-REC.                          00310099
+0001  *01  STUDENT-REC.                                                 00320099
+0001  *    05  STUDENT-ID                   PIC X(06).                  00330099
+0001  *    05  FILLER                       PIC X(01).                  00340099
+0001  *    05  STUDENT-NAME                 PIC X(30).                  00350099
+0001  *    05  FILLER                       PIC X(01).                  00351099
+0001  *    05  STUDENT-SURNAME              PIC X(30).                  00352099
+0001  *    05  FILLER                       PIC X(01).                  00352199
+0001  *    05  STUDENT-SEX                  PIC X(01).                  00352299
+0001  *    05  FILLER                       PIC X(30).                  00352599
+                                                                        00352699
+       FD  KMU1P01                                                      00352799
+           RECORD  CONTAINS  132  CHARACTERS                            00352899
+           RECORDING MODE    IS F                                       00352999
+           LABEL   RECORDS   ARE  OMITTED                               00353099
+           DATA    RECORD    IS   KMU1P01-REC.                          00353199
+       01  KMU1P01-REC                     PIC X(132).                  00354099
+       FD  KMU1P02                                                      00354199
+           RECORD  CONTAINS  132  CHARACTERS                            00354299
+           RECORDING MODE    IS F                                       00354399
+           LABEL   RECORDS   ARE  OMITTED                               00354499
+           DATA    RECORD    IS   KMU1P02-REC.                          00354599
+       01  KMU1P02-REC                     PIC X(132).                  00354699
+       FD  KMU1P03                                                      00354799
+           RECORD  CONTAINS  132  CHARACTERS                            00354899
+           RECORDING MODE    IS F                                       00354999
+           LABEL   RECORDS   ARE  OMITTED                               00355099
+           DATA    RECORD    IS   KMU1P03-REC.                          00355199
+       01  KMU1P03-REC                     PIC X(132).                  00355299
+      *----------------------------------------------------------------*00356045
+       WORKING-STORAGE       SECTION.                                   00450000
+      *----------------------------------------------------------------*00460000
+       77  EOF-ACCLOG                      PIC 9(02)    VALUE ZEROES.   00461399
+       77  EOF-LOCATION                    PIC 9(02)    VALUE ZEROES.   00461599
+       77  EOF-USER                        PIC 9(02)    VALUE ZEROES.   00461699
+       77  ACCLOG-STATUS                   PIC 9(02)    VALUE ZEROES.   00461799
+       77  LOCATION-STATUS                 PIC 9(02)    VALUE ZEROES.   00461899
+       77  USER-STATUS                     PIC 9(02)    VALUE ZEROES.   00461999
+      *----------------------------------------------------------------*00466035
+       01  MISC-AREA.                                                   00470000
+           05  PAGE-CNT-USER-ID            PIC 9(04)    VALUE ZEROES.   00483099
+           05  PAGE-CNT-DATE               PIC 9(04)    VALUE ZEROES.   00484099
+           05  PAGE-CNT-LOCAT              PIC 9(04)    VALUE ZEROES.   00485099
+           05  LINE-CNT-USER-ID            PIC 9(02)    VALUE 90.       00490099
+           05  LINE-CNT-DATE               PIC 9(02)    VALUE 90.       00491099
+           05  LINE-CNT-LOCAT              PIC 9(02)    VALUE 90.       00500099
+           05  WK-RUN-DATE.                                             00620000
+               10  WK-RUN-YY              PIC 9(02).                    00640000
+               10  WK-RUN-MM              PIC 9(02).                    00660000
+               10  WK-RUN-DD              PIC 9(02).                    00680000
+           05  WK-RUN-TIME.                                             00681099
+               10  WK-RUN-HH              PIC 9(02).                    00682099
+               10  WK-RUN-MN              PIC 9(02).                    00683099
+               10  WK-RUN-SS              PIC 9(02).                    00684099
+           05  SPACE-LINE                 PIC X(01).                    00690099
+      *----------------------------------------------------------------*00700000
+           05  ERR-MSG-TABLE.                                           00710000
+               10  FILLER                 PIC X(50)   VALUE             00720000
+1              '** INVALID OPEN  STUDENT  **  STATUS  CODE  =  '.       00730099
+               10  FILLER                 PIC X(50)   VALUE             00740000
+2              '** INVALID READ  STUDENT  **  STATUS  CODE  =  '.       00750099
+               10  FILLER                 PIC X(50)   VALUE             00760000
+3              '** INVALID CLOSE STUDENT  **  STATUS  CODE  =  '.       00770099
+           05  ERR-MSG-TABLE-RDF          REDEFINES   ERR-MSG-TABLE     00780000
+                                          OCCURS  03  TIMES.            00790099
+               10  ERR-MSG-TAB.                                         00800000
+                   15  ERR-MSG            PIC X(48).                    00810000
+                   15  MSG-STATUS         PIC 9(02).                    00820000
+           05  ERR-MSG-TABLE-2.                                         00830000
+               10  ERR-DIGIT-TABLE        OCCURS  03  TIMES.            00840099
+                   15  ERR-DIGIT          PIC 9(01).                    00850000
+      *----------------------------------------------------------------*00860000
+       01  MONTH-NAME.                                                  00870000
+           05  FILLER                     PIC X(09)  VALUE ' JANUARY '. 00880000
+           05  FILLER                     PIC X(09)  VALUE 'FEBRUARY '. 00890000
+           05  FILLER                     PIC X(09)  VALUE '  MARCH  '. 00900000
+           05  FILLER                     PIC X(09)  VALUE '  APRIL  '. 00910000
+           05  FILLER                     PIC X(09)  VALUE '   MAY   '. 00920000
+           05  FILLER                     PIC X(09)  VALUE '  JUNE   '. 00930000
+           05  FILLER                     PIC X(09)  VALUE '  JULY   '. 00940000
+           05  FILLER                     PIC X(09)  VALUE ' AUGUST  '. 00950000
+           05  FILLER                     PIC X(09)  VALUE 'SEPTEMBER'. 00960000
+           05  FILLER                     PIC X(09)  VALUE ' OCTOBER '. 00970000
+           05  FILLER                     PIC X(09)  VALUE 'NOVEMBER '. 00980000
+           05  FILLER                     PIC X(09)  VALUE 'DECEMBER '. 00990000
+0007   01  MONTH-NAME-RDF                 REDEFINES MONTH-NAME.         01000071
+0007       05  MONTH-RDF                  PIC X(09)  OCCURS 12 TIMES.   01010071
+      *----------------------------------------------------------------*01020000
+      *01  FACULTY-ID.                                                  01020199
+      *    05  FAC-SIT                    PIC X(05)   VALUE  'SIT'.     01020299
+      *01  DEPART-ID.                                                   01020399
+      *    05  DEP-IT                     PIC X(05)   VALUE  'IT'.      01020499
+      *    05  DEP-CS                     PIC X(05)   VALUE  'CS'.      01020599
+      *----------------------------------------------------------------*01021099
+       01  DOT-LINE.                                                    01030000
+           05  FILLER                     PIC X(01)   VALUE SPACES.     01040000
+           05  FILLER                     PIC X(131)  VALUE ALL '-'.    01050000
+      *----------------------------------------------------------------*01060000
+       01  R1-H1.                                                       01070099
+           05  FILLER                     PIC X(01)   VALUE SPACES.     01080099
+           05  FILLER                     PIC X(19)   VALUE             01090099
+               'PROGRAM NO. ACCLOG'.                                    01100099
+           05  FILLER                     PIC X(39)   VALUE SPACES.     01110099
+           05  FILLER                     PIC X(14)   VALUE             01120099
+           'ACCLOG  REPORT'.                                            01130099
+           05  FILLER                     PIC X(43)   VALUE SPACES.     01140099
+           05  FILLER                     PIC X(08)   VALUE             01150099
+               'PAGE    '.                                              01160099
+           05  FILLER                     PIC X(05)   VALUE SPACES.     01170099
+           05  PAGE-NO                    PIC ZZ9.                      01180099
+      *---------------------------------------------------------------* 01181099
+       01  R1-H2.                                                       01190099
+           05  FILLER                     PIC X(57)   VALUE SPACES.     01203099
+           05  FILLER                     PIC X(13)   VALUE             01210099
+               'ACCESSLOG BY'.                                          01220099
+           05  FILLER                     PIC X(01)   VALUE SPACES.     01221099
+           05  LIST-BY                    PIC X(10).                    01230099
+               88  LIST-BY-DATE          VALUE 'DATE'.                  01260099
+               88  LIST-BY-LOCAT         VALUE 'LOCATION'.              01270099
+               88  LIST-BY-USER          VALUE 'USER'.                  01270199
+           05  FILLER                    PIC X(08)   VALUE SPACES.      01271099
+      *---------------------------------------------------------------* 01530000
+       01  R1-H3.                                                       01550099
+            05 R1-H3-USER.                                              01550199
+               10 FILLER PIC X(60)     VALUE SPACES.                    01551099
+               10 R1-H3-USER-DATA      PIC X(30).                       01570099
+               10 FILLER PIC X(10)     VALUE SPACES.                    01572099
+            05 R1-H3-DATE.                                              01573099
+               10 FILLER PIC X(60)     VALUE SPACES.                    01574099
+               10 R1-H3-DATE-DATA      PIC X(30).                       01575099
+               10 FILLER PIC X(10)     VALUE SPACES.                    01576099
+            05 R1-H3-LOCAT.                                             01577099
+               10 FILLER PIC X(56)     VALUE SPACES.                    01578099
+               10 R1-H3-LOCAT-DATA     PIC X(30).                       01579099
+               10 FILLER PIC X(10)     VALUE SPACES.                    01580099
+      *---------------------------------------------------------------* 01710000
+       01  R1-H4-DATE.                                                  01710199
+            05 FILLER PIC X(07)     VALUE SPACES.                       01710299
+            05 FILLER PIC X(10)     VALUE 'ID'.                         01710399
+            05 FILLER PIC X(15)     VALUE SPACES.                       01710499
+            05 FILLER PIC X(10)     VALUE 'NAME'.                       01710599
+            05 FILLER PIC X(14)     VALUE SPACES.                       01710699
+            05 FILLER PIC X(10)     VALUE 'FACULTY'.                    01710799
+            05 FILLER PIC X(10)     VALUE SPACES.                       01710899
+            05 FILLER PIC X(10)     VALUE 'DEPARTMENT'.                 01710999
+            05 FILLER PIC X(10)     VALUE SPACES.                       01711099
+            05 FILLER PIC X(10)     VALUE 'TIME'.                       01711199
+            05 FILLER PIC X(07)     VALUE SPACES.                       01711299
+            05 FILLER PIC X(10)     VALUE 'LOCATION'.                   01711399
+      *---------------------------------------------------------------* 01712099
+       01  R1-H4-LOCAT.                                                 01712199
+            05 FILLER PIC X(09)     VALUE SPACES.                       01712299
+            05 FILLER PIC X(10)     VALUE 'ID'.                         01712499
+            05 FILLER PIC X(15)     VALUE SPACES.                       01712599
+            05 FILLER PIC X(10)     VALUE 'NAME'.                       01712699
+            05 FILLER PIC X(14)     VALUE SPACES.                       01712799
+            05 FILLER PIC X(10)     VALUE 'FACULTY'.                    01712899
+            05 FILLER PIC X(10)     VALUE SPACES.                       01712999
+            05 FILLER PIC X(10)     VALUE 'DEPARTMENT'.                 01713099
+            05 FILLER PIC X(10)     VALUE SPACES.                       01713199
+            05 FILLER PIC X(10)     VALUE 'TIME'.                       01713299
+            05 FILLER PIC X(10)     VALUE SPACES.                       01713399
+            05 FILLER PIC X(10)     VALUE 'DATE'.                       01713499
+      *---------------------------------------------------------------* 01714099
+       01  R1-H4-USER.                                                  01714199
+            05 FILLER PIC X(14)     VALUE SPACES.                       01714299
+            05 FILLER PIC X(10)     VALUE 'NAME'.                       01714399
+            05 FILLER PIC X(15)     VALUE SPACES.                       01714499
+            05 FILLER PIC X(10)     VALUE 'FACULTY'.                    01714599
+            05 FILLER PIC X(07)     VALUE SPACES.                       01714699
+            05 FILLER PIC X(10)     VALUE 'DEPARTMENT'.                 01714799
+            05 FILLER PIC X(07)     VALUE SPACES.                       01714899
+            05 FILLER PIC X(10)     VALUE 'TIME'.                       01714999
+            05 FILLER PIC X(07)     VALUE SPACES.                       01715099
+            05 FILLER PIC X(10)     VALUE 'DATE'.                       01715199
+            05 FILLER PIC X(09)     VALUE SPACES.                       01715299
+            05 FILLER PIC X(10)     VALUE 'LOCATION'.                   01715399
+      *---------------------------------------------------------------* 01716099
+       01  R1-D1-DATE.                                                  01720099
+           05  FILLER                   PIC X(03)    VALUE SPACES.      01721099
+           05  R1-D1-ID                 PIC X(11).                      01730099
+           05  FILLER                   PIC X(08)    VALUE SPACES.      01740099
+           05  R1-D1-NAME               PIC X(32)    VALUE SPACES.      01741099
+           05  FILLER                   PIC X(01)    VALUE SPACES.      01742099
+           05  R1-D1-FACULTY            PIC X(07).                      01743099
+           05  FILLER                   PIC X(13)    VALUE SPACES.      01744099
+           05  R1-D1-DEPARTMENT         PIC X(07).                      01745099
+           05  FILLER                   PIC X(13)    VALUE SPACES.      01746099
+           05  R1-D1-TIME               PIC X(08).                      01747099
+           05  FILLER                   PIC X(03)    VALUE SPACES.      01747199
+           05  R1-D1-LOCATION           PIC X(30).                      01747299
+      *---------------------------------------------------------------* 01747999
+       01  R1-D2-LOCATION.                                              01748099
+           05  FILLER                   PIC X(05)    VALUE SPACES.      01748199
+           05  R1-D2-ID                 PIC X(11).                      01748399
+           05  FILLER                   PIC X(08)    VALUE SPACES.      01748499
+           05  R1-D2-NAME               PIC X(32).                      01748599
+           05  FILLER                   PIC X(01)    VALUE SPACES.      01748799
+           05  R1-D2-FACULTY            PIC X(07).                      01748899
+           05  FILLER                   PIC X(13)    VALUE SPACES.      01748999
+           05  R1-D2-DEPARTMENT         PIC X(07).                      01749099
+           05  FILLER                   PIC X(13)    VALUE SPACES.      01749199
+           05  R1-D2-TIME               PIC X(08).                      01749299
+           05  FILLER                   PIC X(11)    VALUE SPACES.      01749399
+           05  R1-D2-DATE               PIC X(10).                      01749499
+      *---------------------------------------------------------------* 01749599
+       01  R1-D3-USER.                                                  01749699
+           05  FILLER                   PIC X(03)    VALUE SPACES.      01749799
+           05  R1-D3-NAME               PIC X(32).                      01749899
+           05  FILLER                   PIC X(03)    VALUE SPACES.      01749999
+           05  R1-D3-FACULTY            PIC X(05).                      01750099
+           05  FILLER                   PIC X(12)    VALUE SPACES.      01750199
+           05  R1-D3-DEPARTMENT         PIC X(07).                      01750299
+           05  FILLER                   PIC X(09)    VALUE SPACES.      01750399
+           05  R1-D3-TIME               PIC X(10).                      01750499
+           05  FILLER                   PIC X(07)    VALUE SPACES.      01750599
+           05  R1-D3-DATE               PIC X(10).                      01750699
+           05  FILLER                   PIC X(05)    VALUE SPACES.      01750799
+           05  R1-D3-LOCATION           PIC X(30).                      01750899
+      *---------------------------------------------------------------* 01750999
+       01 WK-LOCAT                      PIC X(30).                      01753099
+       01 WK-FULL-NAME                  PIC X(32).                      01754099
+       01 WK-FNAME                      PIC X(15).                      01755099
+       01 WK-SNAME                      PIC X(15).                      01756099
+      *---------------------------------------------------------------* 01760099
+       PROCEDURE              DIVISION.                                 02500000
+      *----------------------------------------------------------------*02510000
+       000-CONTROL.                                                     02520092
+0002       PERFORM  100-INITIAL           THRU  100-EXIT.               02540082
+0002       PERFORM  200-MAINLINE          THRU  200-EXIT                02550099
+0002                UNTIL    EOF-ACCLOG   =  1.                         02560099
+           PERFORM  900-TERMINATE         THRU  900-EXIT.               02570099
+       000-EXIT.    EXIT.                                               02590000
+      *----------------------------------------------------------------*02600000
+       100-INITIAL.                                                     02611095
+           DISPLAY '100-INITIAL'.                                       02612099
+      **   CLOSE  ACCLOG LOCATION USER .                                02613099
+           PERFORM 110-OPEN-FILE           THRU  110-EXIT.              02630056
+                                                                        02810000
+       100-EXIT.   EXIT.                                                02830056
+      *---------------------------------------------------------------* 02840099
+       110-OPEN-FILE.                                                   02850028
+           DISPLAY '110-OPEN'.                                          02860099
+           OPEN    OUTPUT   KMU1P01.                                    02961099
+           OPEN    OUTPUT   KMU1P02.                                    02961199
+           OPEN    OUTPUT   KMU1P03.                                    02961299
+                                                                        02961399
+           OPEN    INPUT    ACCLOG.                                     02961499
+           IF      ACCLOG-STATUS    NOT   =  ZEROES                     02962099
+               AND  ACCLOG-STATUS NOT = 97                              02962199
+                   DISPLAY 'ACCLOG STATUS : ' ACCLOG-STATUS             02962299
+                   STOP     RUN.                                        02967056
+           OPEN    INPUT    USER.                                       02968099
+           IF      USER-STATUS    NOT   =  ZEROES                       02969099
+                   DISPLAY 'USER STATUS : ' USER-STATUS                 02969199
+                   STOP     RUN.                                        02969599
+           OPEN    INPUT    LOCATION.                                   02969699
+           IF      LOCATION-STATUS    NOT   =  ZEROES                   02969799
+                   DISPLAY 'LOCATION STATUS : ' LOCATION-STATUS         02969899
+                   STOP     RUN.                                        02969999
+       110-EXIT.   EXIT.                                                02970028
+      *----------------------------------------------------------------*02980000
+       200-MAINLINE.                                                    02990056
+           DISPLAY '200-MAINLINE'.                                      02991099
+           PERFORM 400-READ-ACCLOG    THRU 400-EXIT                     02992099
+                   UNTIL  EOF-ACCLOG  = 1.                              02993099
+       200-EXIT. EXIT.                                                  03020056
+      *--------------------------------------------------------------*  03220000
+       400-READ-ACCLOG.                                                 03220199
+           READ    ACCLOG                   AT   END                    03220299
+                   MOVE     1               TO   EOF-ACCLOG             03220399
+                   GO       TO              400-EXIT.                   03220499
+      *    MOVE STDENT-ID TO WK-COMP-CODE                               03220599
+           PERFORM 500-READ-USER-AND-LOCAT THRU 500-EXIT.               03220999
+      *    PERFORM 840-PRINT-STUDENT-INFO    THRU 840-EXIT.             03221099
+       400-EXIT. EXIT.                                                  03221199
+      *--------------------------------------------------------------*  03221299
+       500-READ-USER-AND-LOCAT.                                         03221399
+           MOVE ACC-USER-ID               TO  USER-ID.                  03221499
+           MOVE ACC-LOCATION-ID           TO  LOCAT-ID.                 03221599
+           READ USER          INVALID KEY                               03221699
+                GO TO  500-EXIT.                                        03221799
+           READ LOCATION      INVALID KEY                               03221899
+                GO TO  500-EXIT.                                        03221999
+           IF ACC-USER-ID = '57130500002'                               03222099
+              DISPLAY 'PRINT ACC BY USER ID'                            03222199
+              MOVE ACC-USER-ID  TO R1-H3-USER-DATA                      03222299
+              PERFORM  840-PRINT-BY-USER-ID    THRU  840-EXIT           03222399
+           END-IF.                                                      03222499
+           IF ACC-ENTER-DATE = '04/04/2017'                             03222599
+              DISPLAY 'PRINT ACC BY DATE'                               03222699
+              MOVE ACC-ENTER-DATE TO R1-H3-DATE-DATA                    03222799
+              PERFORM  845-PRINT-BY-DATE       THRU  845-EXIT           03222899
+           END-IF.                                                      03222999
+           DISPLAY 'LOCAT' LOCAT-BUILDING(1:4).                         03223099
+           DISPLAY 'LOCAT' LOCAT-FLOOR(1:9).                            03223199
+           DISPLAY 'LOCAT' LOCAT-ROOM(1:15).                            03223299
+           IF LOCAT-BUILDING(1:4) =  ' SIT'                             03223399
+            AND LOCAT-FLOOR(1:9)  = '  FLOOR-1'                         03223499
+            AND LOCAT-ROOM(1:15)  = '   LAB-L       '                   03223599
+              DISPLAY 'PRINT ACC BY LOCATION '                          03223699
+              PERFORM 650-SET-LOCAT THRU 650-EXIT                       03223799
+              MOVE  WK-LOCAT  TO R1-H3-LOCAT-DATA                       03223999
+              PERFORM  847-PRINT-BY-LOCAT      THRU  847-EXIT           03224099
+           END-IF.                                                      03224199
+       500-EXIT. EXIT.                                                  03224299
+      *--------------------------------------------------------------*  03224399
+      *510-READ-USER-DATE.                                              03224499
+      *    MOVE ACC-ENTER-DATE           TO  STDINFO-STUDENT-ID.        03224599
+      *    READ STDINFO       INVALID KEY                               03224699
+      *         GO TO  500-EXIT.                                        03224799
+      *                                                                 03224899
+      *    PERFORM  840-PRINT-STUDENT-INFO  THRU  840-EXIT.             03224999
+      *510-READ-STDENTINFO.                                             03225099
+      *--------------------------------------------------------------*  03226099
+       600-SET-FULL-NAME.                                               03226199
+           STRING  USER-NAME     DELIMITED BY SIZE                      03226499
+                                                                        03226599
+                   USER-SURNAME  DELIMITED BY SIZE                      03226699
+               INTO WK-FULL-NAME                                        03226799
+           END-STRING.                                                  03226899
+           DISPLAY 'FULLNAME IS ' WK-FULL-NAME.                         03226999
+           DISPLAY 'USERNAME IS ' USER-NAME.                            03227099
+           DISPLAY 'USERSUR  IS ' USER-SURNAME.                         03227199
+       600-EXIT. EXIT.                                                  03227299
+      *--------------------------------------------------------------*  03227399
+       650-SET-LOCAT.                                                   03227499
+           STRING  LOCAT-BUILDING (1:4) DELIMITED BY SIZE               03227599
+      *            ''                   DELIMITED BY SIZE               03227699
+                   LOCAT-FLOOR(1:9)     DELIMITED BY SIZE               03227799
+      *            ''                   DELIMITED BY SIZE               03227899
+                   LOCAT-ROOM(1:15)     DELIMITED BY SIZE               03227999
+               INTO WK-LOCAT                                            03228099
+           END-STRING.                                                  03228199
+       650-EXIT. EXIT.                                                  03228299
+      *--------------------------------------------------------------*  03229099
+       830-PRINT-H-USER-ID.                                             03230099
+           ADD     1                TO         PAGE-CNT-USER-ID.        03240099
+           MOVE    PAGE-CNT-USER-ID TO         PAGE-NO.                 03250099
+           SET     LIST-BY-USER     TO TRUE.                            03251099
+           WRITE   KMU1P01-REC FROM SPACE-LINE BEFORE NEXT-PAGE.        03260099
+           WRITE   KMU1P01-REC FROM R1-H1      BEFORE 1.                03270099
+           WRITE   KMU1P01-REC FROM R1-H2      BEFORE 1.                03280099
+           WRITE   KMU1P01-REC FROM R1-H3-USER BEFORE 1.                03280199
+           WRITE   KMU1P01-REC FROM DOT-LINE   BEFORE 1.                03281099
+           WRITE   KMU1P01-REC FROM R1-H4-USER BEFORE 1.                03330199
+           WRITE   KMU1P01-REC FROM DOT-LINE   BEFORE 1.                03330299
+           WRITE   KMU1P01-REC FROM SPACE-LINE BEFORE 1.                03331099
+           MOVE    7           TO              LINE-CNT-USER-ID.        03340099
+       830-EXIT.  EXIT.                                                 03350099
+      *----------------------------------------------------------------*03360000
+       835-PRINT-H-DATE.                                                03360199
+           ADD     1                TO         PAGE-CNT-DATE.           03360299
+           MOVE    PAGE-CNT-DATE    TO         PAGE-NO.                 03360399
+           SET     LIST-BY-DATE     TO TRUE.                            03360499
+           WRITE   KMU1P02-REC FROM SPACE-LINE BEFORE NEXT-PAGE.        03360599
+           WRITE   KMU1P02-REC FROM R1-H1      BEFORE 1.                03360699
+           WRITE   KMU1P02-REC FROM R1-H2      BEFORE 1.                03360799
+           WRITE   KMU1P02-REC FROM R1-H3-DATE BEFORE 1.                03360899
+           WRITE   KMU1P02-REC FROM DOT-LINE   BEFORE 1.                03361199
+           WRITE   KMU1P02-REC FROM R1-H4-DATE BEFORE 1.                03361399
+           WRITE   KMU1P02-REC FROM DOT-LINE   BEFORE 1.                03361499
+           WRITE   KMU1P02-REC FROM SPACE-LINE BEFORE 1.                03361599
+           MOVE    7           TO              LINE-CNT-DATE.           03361699
+       835-EXIT.  EXIT.                                                 03361799
+      *----------------------------------------------------------------*03362099
+       837-PRINT-H-LOCAT.                                               03362199
+           ADD     1                TO         PAGE-CNT-LOCAT           03362299
+           MOVE    PAGE-CNT-LOCAT   TO         PAGE-NO.                 03362399
+           SET     LIST-BY-LOCAT    TO TRUE.                            03362499
+           WRITE   KMU1P03-REC FROM SPACE-LINE  BEFORE NEXT-PAGE.       03362599
+           WRITE   KMU1P03-REC FROM R1-H1       BEFORE 1.               03362699
+           WRITE   KMU1P03-REC FROM R1-H2       BEFORE 1.               03362799
+           WRITE   KMU1P03-REC FROM R1-H3-LOCAT BEFORE 1.               03362899
+           WRITE   KMU1P03-REC FROM DOT-LINE    BEFORE 1.               03363199
+           WRITE   KMU1P03-REC FROM R1-H4-LOCAT BEFORE 1.               03363399
+           WRITE   KMU1P03-REC FROM DOT-LINE    BEFORE 1.               03363499
+           WRITE   KMU1P03-REC FROM SPACE-LINE  BEFORE 1.               03363599
+           MOVE    7           TO              LINE-CNT-LOCAT.          03363699
+       837-EXIT.  EXIT.                                                 03363799
+      *----------------------------------------------------------------*03364099
+       840-PRINT-BY-USER-ID.                                            03370099
+           IF      LINE-CNT-USER-ID GREATER       16                    03380099
+                   PERFORM 830-PRINT-H-USER-ID THRU  830-EXIT.          03381099
+           PERFORM 600-SET-FULL-NAME  THRU 600-EXIT.                    03381199
+           PERFORM 650-SET-LOCAT      THRU 650-EXIT.                    03381299
+           MOVE  WK-FULL-NAME      TO R1-D3-NAME.                       03381399
+           MOVE  USER-FACULTY      TO R1-D3-FACULTY.                    03381499
+           MOVE  USER-DEPARTMENT   TO R1-D3-DEPARTMENT.                 03381699
+           MOVE  ACC-ENTER-TIME    TO R1-D3-TIME.                       03381899
+           MOVE  ACC-ENTER-DATE    TO R1-D3-DATE.                       03381999
+           MOVE  WK-LOCAT          TO R1-D3-LOCATION.                   03382099
+           WRITE KMU1P01-REC       FROM  R1-D3-USER BEFORE 1.           03382799
+           ADD     1               TO  LINE-CNT-USER-ID.                03382899
+       840-EXIT.   EXIT.                                                03570099
+      *----------------------------------------------------------------*03580000
+       845-PRINT-BY-DATE.                                               03581099
+           IF      LINE-CNT-DATE    GREATER       16                    03582099
+                   PERFORM 835-PRINT-H-DATE    THRU  835-EXIT.          03583099
+           PERFORM 600-SET-FULL-NAME  THRU 600-EXIT.                    03583199
+           PERFORM 650-SET-LOCAT      THRU 650-EXIT.                    03583299
+           MOVE  WK-FULL-NAME      TO R1-D1-NAME.                       03583399
+           MOVE  USER-FACULTY      TO R1-D1-FACULTY.                    03583499
+           MOVE  USER-DEPARTMENT   TO R1-D1-DEPARTMENT.                 03583599
+           MOVE  USER-ID           TO R1-D1-ID.                         03583699
+           MOVE  ACC-ENTER-TIME    TO R1-D1-TIME.                       03583799
+           MOVE  WK-LOCAT          TO R1-D1-LOCATION.                   03583899
+           WRITE KMU1P02-REC       FROM  R1-D1-DATE BEFORE 1.           03586099
+           ADD     1               TO  LINE-CNT-DATE.                   03587099
+       845-EXIT.   EXIT.                                                03588099
+      *----------------------------------------------------------------*03590099
+       847-PRINT-BY-LOCAT.                                              03591099
+           IF      LINE-CNT-LOCAT   GREATER       16                    03592099
+                   PERFORM 837-PRINT-H-LOCAT   THRU  837-EXIT.          03593099
+           PERFORM 600-SET-FULL-NAME  THRU 600-EXIT.                    03593199
+           MOVE  WK-FULL-NAME      TO R1-D2-NAME.                       03593399
+           MOVE  USER-FACULTY      TO R1-D2-FACULTY.                    03593499
+           MOVE  USER-DEPARTMENT   TO R1-D2-DEPARTMENT.                 03593599
+           MOVE  USER-ID           TO R1-D2-ID.                         03593699
+           MOVE  ACC-ENTER-TIME    TO R1-D2-TIME.                       03593799
+           MOVE  ACC-ENTER-DATE    TO R1-D2-DATE.                       03593899
+           WRITE KMU1P03-REC       FROM  R1-D2-LOCATION BEFORE 1.       03596099
+           ADD     1               TO  LINE-CNT-LOCAT.                  03597099
+       847-EXIT.   EXIT.                                                03598099
+      *----------------------------------------------------------------*03600099
+       900-TERMINATE.                                                   04170099
+           CLOSE   ACCLOG LOCATION USER.                                04200099
+           STOP    RUN.                                                 04210099
+       900-EXIT.   EXIT.                                                04220099
+      *----------------------------------------------------------------*04230000
+
